@@ -8,7 +8,7 @@
 
 ## Installation
 ```
-git clone https://github.com/wangsongiam/sina-stock-crawler.git && cd sina-stock-crawler 
+git clone https://github.com/HudsonStreet/sina-stock-crawler.git && cd sina-stock-crawler 
 ```
 
 ## Run
