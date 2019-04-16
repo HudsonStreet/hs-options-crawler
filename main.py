@@ -3,6 +3,7 @@ import json
 import csv
 import datetime
 
+#Sample Info: http://stock.finance.sina.com.cn/option/quotes.html
 # expireDate
 # http://stock.finance.sina.com.cn/futures/api/openapi.php/StockOptionService.getRemainderDay?date=201706
 # frontrow = [
@@ -20,7 +21,7 @@ frontrow = [
 def match_twins(month: int):
     prefix = 'http://hq.sinajs.cn/list=OP_'
     # suffix = '_51005017'
-    suffix = '_510050'
+    suffix = '_510050'  #Stock Code, Could be a flag as input
     url1 = f'{prefix}UP{suffix}{str(month)}'
     url2 = f'{prefix}DOWN{suffix}{str(month)}'
     return (get_paried_urls([url1, url2]))
@@ -31,10 +32,25 @@ def get_paried_urls(twin_list: list) -> list:
     paired_url = []
     for url in twin_list:
         content = urllib.request.urlopen(url, None).read().decode('GBK')
+        print("----------------Get Contents of current Month Up and Down  Options--------------")
+        print(content)
+        print("--------------------------------------------------------------------------------")
         paired_url.append(get_all_name(content))
+
+        print("------------Get all names--------------------------------------------------")
+        print(get_all_name(content))
+        print("------------------------------------------")
+
+        print("-------------Paired urls--------------------------------------------------")
+        print(paired_url)
+        print("------------------------------------------")
+
     return (re_pair(paired_url))
 
 
+"""
+Put the the returned options into a list
+"""
 def get_all_name(content) -> list:
     quo_pos = content.find('"')
     seg = content[quo_pos + 1:-3]
@@ -104,3 +120,5 @@ with open('sing_stock_data.csv', 'w', newline='') as csvfile:
             writer.writerow([date] + data_parser(pairs))
         writer.writerow([])
         print(f'done with data from month {date_string[4:6]}')
+
+#Writing data to DB
