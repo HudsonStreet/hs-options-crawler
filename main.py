@@ -2,6 +2,7 @@ import urllib.request
 import json
 import csv
 import datetime
+from requests import get
 
 # expireDate
 # http://stock.finance.sina.com.cn/futures/api/openapi.php/StockOptionService.getRemainderDay?date=201706
@@ -19,7 +20,7 @@ frontrow = [
 
 def match_twins(month: int):
     prefix = 'http://hq.sinajs.cn/list=OP_'
-    # suffix = '_51005017'
+    # suffix = '_51005017' 
     suffix = '_510050'
     url1 = f'{prefix}UP{suffix}{str(month)}'
     url2 = f'{prefix}DOWN{suffix}{str(month)}'
@@ -75,13 +76,20 @@ def get_expire_url(month) -> str:
     url = f'{prefixDate}{str(month)}'
     return url
 
+"""
+Error function here:
 
 def get_expire_date(url_link) -> str:
     with urllib.request.urlopen(url_link) as url:
         data = json.loads(url.read().decode())
         # print(data)
         return (data['result']['data']['expireDay'])
+"""
 
+def get_op_expire_day(date):
+    url = "http://stock.finance.sina.com.cn/futures/api/openapi.php/StockOptionService.getRemainderDay?date={date}01"
+    data = get(url.format(date=date)).json()['result']['data']
+    return (data['expireDay'])
 
 # Writing to CSV
 with open('sing_stock_data.csv', 'w', newline='') as csvfile:
@@ -92,7 +100,7 @@ with open('sing_stock_data.csv', 'w', newline='') as csvfile:
         date_string = ''.join(
             (datetime.date.today() +
              datetime.timedelta(i * 365 / 12)).isoformat().split('-'))
-        date = get_expire_date(get_expire_url(date_string[:6]))
+        date = get_op_expire_day(date_string[:6])
 
         if len(match_twins(date_string[2:6])) == 0:
             print(f'no data found in {date_string[4:6]} 月')
