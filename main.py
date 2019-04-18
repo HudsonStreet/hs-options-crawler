@@ -13,7 +13,7 @@ from requests import get
 # ]
 
 frontrow = [
-    'Date', '买量', '买价bid', '最新价last', '卖价ask', '卖量', '振幅%change', '涨跌幅change',
+    'RowID', 'Date', '买量', '买价bid', '最新价last', '卖价ask', '卖量', '振幅%change', '涨跌幅change',
     '行权strike', '买量', '买价', '最新价', '卖价', '卖量', '振幅', '涨跌幅', '行权'
 ]
 
@@ -92,6 +92,9 @@ with open('sing_stock_data.csv', 'w', newline='') as csvfile:
             print(f'found data from {date_string[4:6]} 月, start saving')
             writer.writerow(frontrow)
         for pairs in match_twins(date_string[2:6]):
-            writer.writerow([date] + data_parser(pairs))
+            target_date = date
+            op_item_within_strike = data_parser(pairs)
+            rowId = str(target_date) + '-' + str(op_item_within_strike[7]) #Use date+strike as rowId\
+            writer.writerow([rowId] + [target_date] + op_item_within_strike)
         writer.writerow([])
         print(f'done with data from month {date_string[4:6]}')
