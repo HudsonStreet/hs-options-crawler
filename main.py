@@ -4,8 +4,7 @@ import csv
 import datetime
 from requests import get
 
-# expireDate
-# http://stock.finance.sina.com.cn/futures/api/openapi.php/StockOptionService.getRemainderDay?date=201706
+##Date format
 # frontrow = [
 #     'Date', 'ExpireDate', 'OptionType', 'Strike', 'Contract Name', 'Last',
 #     'Bid', 'Ask', 'Change', '%Change', 'Volume', 'OpenInterest',
@@ -69,16 +68,22 @@ def data_parser(double_query):
         row.extend(params[0:8])
     return (row)
 
+
 def get_op_expire_day(date):
     url = "http://stock.finance.sina.com.cn/futures/api/openapi.php/StockOptionService.getRemainderDay?date={date}01"
     data = get(url.format(date=date)).json()['result']['data']
     return (data['expireDay'])
 
+
 # Writing to CSV
-with open('sing_stock_data.csv', 'w', newline='') as csvfile:
+with open('sing_stock_data.csv', 'w+', newline='') as csvfile:
     writer = csv.writer(csvfile, delimiter=',')
 
-    print('started checking and saving data, it might take a few minutes')
+    rows = csv.DictReader(csvfile)
+    for row in rows:
+        print(row)
+    #TODO(jinsiang): add prints into logs
+    print('started checking and saving data, it might take a few minutes') 
     for i in range(12):
         date_string = ''.join(
             (datetime.date.today() +
@@ -88,13 +93,12 @@ with open('sing_stock_data.csv', 'w', newline='') as csvfile:
         if len(match_twins(date_string[2:6])) == 0:
             print(f'no data found in {date_string[4:6]} 月')
         else:
-            writer.writerow([f'{date_string[:6]}'])
-            print(f'found data from {date_string[4:6]} 月, start saving')
-            writer.writerow(frontrow)
+            print(f'found data from {date_string[4:6]} 月, start checking and saving')
         for pairs in match_twins(date_string[2:6]):
             target_date = date
             op_item_within_strike = data_parser(pairs)
             rowId = str(target_date) + '-' + str(op_item_within_strike[7]) #Use date+strike as rowId\
+            
+            #TODO(jinsiang): Check the row entry before write, if value(op_item_within_strike) no change, goto next, else modify
             writer.writerow([rowId] + [target_date] + op_item_within_strike)
-        writer.writerow([])
         print(f'done with data from month {date_string[4:6]}')
