@@ -69,23 +69,6 @@ def data_parser(double_query):
         row.extend(params[0:8])
     return (row)
 
-
-# url->
-def get_expire_url(month) -> str:
-    prefixDate = 'http://stock.finance.sina.com.cn/futures/api/openapi.php/StockOptionService.getRemainderDay?date='
-    url = f'{prefixDate}{str(month)}'
-    return url
-
-"""
-Error function here:
-
-def get_expire_date(url_link) -> str:
-    with urllib.request.urlopen(url_link) as url:
-        data = json.loads(url.read().decode())
-        # print(data)
-        return (data['result']['data']['expireDay'])
-"""
-
 def get_op_expire_day(date):
     url = "http://stock.finance.sina.com.cn/futures/api/openapi.php/StockOptionService.getRemainderDay?date={date}01"
     data = get(url.format(date=date)).json()['result']['data']
