@@ -3,6 +3,7 @@ import json
 import csv
 import datetime
 from requests import get
+import fcntl
 
 # expireDate
 # http://stock.finance.sina.com.cn/futures/api/openapi.php/StockOptionService.getRemainderDay?date=201706
@@ -76,9 +77,10 @@ def get_op_expire_day(date):
 
 # Writing to CSV
 with open('sing_stock_data.csv', 'w', newline='') as csvfile:
+    fcntl.flock(csvfile.fileno(), fcntl.LOCK_EX) #Add write lock here
+    start_time = datetime.datetime.now()
+    print('Lock the file to write at {start_time}'.format(start_time=start_time))
     writer = csv.writer(csvfile, delimiter=',')
-
-    print('started checking and saving data, it might take a few minutes')
     for i in range(12):
         date_string = ''.join(
             (datetime.date.today() +
@@ -98,3 +100,5 @@ with open('sing_stock_data.csv', 'w', newline='') as csvfile:
             writer.writerow([rowId] + [target_date] + op_item_within_strike)
         writer.writerow([])
         print(f'done with data from month {date_string[4:6]}')
+end_time = datetime.datetime.now()
+print('Relase the lock at {end_time}, the program takes: {runtime} sec'.format(end_time=end_time, runtime=(end_time-start_time).seconds))
