@@ -21,9 +21,12 @@ python3 main.py
 Depends on you network, it might take up to a few minutes, be patient.
 
 ## Output file
-After crawling, you will get a CSV file named `sing_stock_data.csv` with a structure like this:
+After crawling, you will get a CSV file named `sing_stock_data.csv` with columns:
 
-![](https://user-images.githubusercontent.com/19645990/30264542-fdd77944-96a6-11e7-84cb-dc863e8ab2b1.png)
+'RowID', 'Date', '买量', '买价bid', '最新价last', '卖价ask', '卖量', '振幅%change', '涨跌幅change','行权strike', '买量', '买价', '最新价', '卖价', '卖量', '振幅', '涨跌幅', '行权'
+
+![](https://github.com/HudsonStreet/sina-stock-crawler/blob/master/screenshots/screen_shot_HS.jpg?raw=true)
+![](https://github.com/HudsonStreet/sina-stock-crawler/blob/master/screenshots/HS_DATA_SAMPLE.jpg?raw=true)
 
 ## Source
 [sina_stock](http://stock.finance.sina.com.cn/option/quotes.html)
