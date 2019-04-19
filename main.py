@@ -90,15 +90,12 @@ with open('sing_stock_data.csv', 'w', newline='') as csvfile:
         if len(match_twins(date_string[2:6])) == 0:
             print(f'no data found in {date_string[4:6]} 月')
         else:
-            writer.writerow([f'{date_string[:6]}'])
             print(f'found data from {date_string[4:6]} 月, start saving')
-            writer.writerow(frontrow)
         for pairs in match_twins(date_string[2:6]):
             target_date = date
             op_item_within_strike = data_parser(pairs)
             rowId = str(target_date) + '-' + str(op_item_within_strike[7]) #Use date+strike as rowId\
             writer.writerow([rowId] + [target_date] + op_item_within_strike)
-        writer.writerow([])
         print(f'done with data from month {date_string[4:6]}')
 end_time = datetime.datetime.now()
 print('Relase the lock at {end_time}, the program takes: {runtime} sec'.format(end_time=end_time, runtime=(end_time-start_time).seconds))
