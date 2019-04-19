@@ -70,32 +70,42 @@ def data_parser(double_query):
         row.extend(params[0:8])
     return (row)
 
+
+"""Get option expire dates
+"""
 def get_op_expire_day(date):
     url = "http://stock.finance.sina.com.cn/futures/api/openapi.php/StockOptionService.getRemainderDay?date={date}01"
     data = get(url.format(date=date)).json()['result']['data']
     return (data['expireDay'])
+
+
+"""Get option monthes, so that we don't need a loop from 1 to 12
+    Return a list of monthes, formate like: ['201904', '201905', '201906', '201909']
+"""
+def get_op_dates():
+    url = "http://stock.finance.sina.com.cn/futures/api/openapi.php/StockOptionService.getStockName"
+    dates = get(url).json()['result']['data']['contractMonth']
+    return [''.join(i.split('-')) for i in dates][1:]
+
 
 # Writing to CSV
 with open('sing_stock_data.csv', 'w', newline='') as csvfile:
     fcntl.flock(csvfile.fileno(), fcntl.LOCK_EX) #Add write lock here
     start_time = datetime.datetime.now()
     print('Lock the file to write at {start_time}'.format(start_time=start_time))
+    
     writer = csv.writer(csvfile, delimiter=',')
-    for i in range(12):
-        date_string = ''.join(
-            (datetime.date.today() +
-             datetime.timedelta(i * 365 / 12)).isoformat().split('-'))
-        date = get_op_expire_day(date_string[:6])
+    op_contract_month = get_op_dates()
+    print('Contract monthes: {monthes}'.format(monthes=op_contract_month))
+    
+    for current_contract_month in op_contract_month:
+        date = get_op_expire_day(current_contract_month)
 
-        if len(match_twins(date_string[2:6])) == 0:
-            print(f'no data found in {date_string[4:6]} 月')
-        else:
-            print(f'found data from {date_string[4:6]} 月, start saving')
-        for pairs in match_twins(date_string[2:6]):
+        for pairs in match_twins(current_contract_month[2:]):
             target_date = date
             op_item_within_strike = data_parser(pairs)
             rowId = str(target_date) + '-' + str(op_item_within_strike[7]) #Use date+strike as rowId\
             writer.writerow([rowId] + [target_date] + op_item_within_strike)
-        print(f'done with data from month {date_string[4:6]}')
+        print(f'done with data from month {current_contract_month[4:]}')
 end_time = datetime.datetime.now()
 print('Relase the lock at {end_time}, the program takes: {runtime} sec'.format(end_time=end_time, runtime=(end_time-start_time).seconds))

@@ -61,7 +61,7 @@ def get_op_greek_alphabet(code):
 
 if __name__ == '__main__':
     dates = get_op_dates()
-    print(dates)
+    print('Option dates: {dates}'.format(dates = dates))
     # print('期权合约月份：{}'.format(dates))
     # for date in dates:
     #     print('期权月份{}：到期日{} 剩余天数{}'.format(date, *get_op_expire_day(date)))
