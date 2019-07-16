@@ -33,5 +33,5 @@ After crawling, you will get a CSV file named `sing_stock_data.csv` with columns
 [sina_stock](http://stock.finance.sina.com.cn/option/quotes.html)
 
 ## License
-1. MIT © [Song Wang](https://songwang.io)
+1. MIT
 2. Under the Anti 996 License. See the [Anti 996 LICENSE file](https://github.com/HudsonStreet/sina-stock-crawler/blob/master/LICENSE_996) for details.
